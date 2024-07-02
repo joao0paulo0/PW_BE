@@ -112,20 +112,33 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-// Controller methods
 exports.registerUser = async (req, res) => {
   const { email, password, role } = req.body;
 
   try {
+    // Check if user with the same email already exists
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ message: "User already exists with this email." });
+    }
+
+    // Create a new user instance
     const newUser = new User({ email, password, role });
     await newUser.save();
 
-    // Send confirmation email
+    // Send confirmation email (optional step)
     await sendConfirmationEmail(newUser);
 
     res.status(201).json({
-      message:
-        "User registered successfully. Check your email for verification.",
+      message: "User registered successfully.",
+      user: {
+        id: newUser._id,
+        email: newUser.email,
+        role: newUser.role,
+      },
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -170,6 +183,11 @@ exports.loginUser = async (req, res) => {
     // Check if password matches
     if (user.password !== password) {
       return res.status(400).json({ message: "Invalid credentials." });
+    }
+
+    // Check if user is verified
+    if (!user.verified) {
+      return res.status(403).json({ message: "User is not verified." });
     }
 
     // Create and sign JWT token
