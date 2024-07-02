@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { v4: uuidv4 } = require("uuid");
 
@@ -152,6 +153,46 @@ exports.verifyUser = async (req, res) => {
     res.status(200).json({ message: "User verified successfully." });
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Check if password matches
+    if (user.password !== password) {
+      return res.status(400).json({ message: "Invalid credentials." });
+    }
+
+    // Create and sign JWT token
+    const payload = {
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
+    };
+
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET, // Use environment variable for JWT secret
+      { expiresIn: "1h" }, // Token expires in 1 hour
+      (err, token) => {
+        if (err) throw err;
+        res.status(200).json({ token });
+      }
+    );
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server Error" });
   }
 };
 

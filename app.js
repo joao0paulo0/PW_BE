@@ -1,6 +1,8 @@
+require("dotenv").config(); // Load environment variables from .env file
 const express = require("express");
 const connectDB = require("./config/db");
 const app = express();
+const cors = require("cors");
 const port = 3000;
 
 // Connect to MongoDB
@@ -8,6 +10,7 @@ connectDB();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use(cors());
 
 // Routes
 app.use("/books", require("./routes/books"));
