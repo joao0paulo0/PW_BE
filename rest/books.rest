@@ -2,20 +2,21 @@
 GET http://localhost:3000/books
 
 ### GET a single book by ID
-GET http://localhost:3000/books/66841f76fddf4563d622449b
+GET http://localhost:3000/books/668430f503a3f8478b95fbd4
 
 ### POST create a new book
 POST http://localhost:3000/books
 Content-Type: application/json
 
 {
-  "title": "Sample Book",
+  "title": "Livro ESTG",
   "author": "John Doe",
-  "category": "Fiction"
+  "category": "Informatics",
+  "totalCopies": 4
 }
 
 ### PUT update a book by ID
-PUT http://localhost:3000/books/66841f76fddf4563d622449b
+PUT http://localhost:3000/books/668430f503a3f8478b95fbd4
 Content-Type: application/json
 
 {
@@ -24,3 +25,12 @@ Content-Type: application/json
 
 ### DELETE a book by ID
 DELETE http://localhost:3000/books/66841f76fddf4563d622449b
+
+### GET books by title
+GET http://localhost:3000/books?title=João
+
+### GET books by author
+GET http://localhost:3000/books?author=Doe
+
+### GET books by category
+GET http://localhost:3000/books?category=Fiction

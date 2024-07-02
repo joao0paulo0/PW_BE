@@ -1,0 +1,28 @@
+### Create a new reservation
+POST http://localhost:3000/reservations/create
+Content-Type: application/json
+
+{
+  "userId": "66842ffa7f1ec6ca9684cb9f",
+  "bookId": "6684447818698a33f19472be"
+}
+
+### Get all reservations
+GET http://localhost:3000/reservations
+
+#### Get reservations by user ID
+GET http://localhost:3000/reservations/user/user_id_here
+# Replace user_id_here with a valid user ID
+
+### Update reservation status by ID
+PUT http://localhost:3000/reservations/reservation_id_here
+Content-Type: application/json
+
+{
+  "status": "returned" 
+}
+# Replace reservation_id_here with a valid reservation ID
+
+### Delete reservation by ID
+DELETE http://localhost:3000/reservations/reservation_id_here
+# Replace reservation_id_here with a valid reservation ID

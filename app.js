@@ -12,6 +12,7 @@ app.use(express.json());
 // Routes
 app.use("/books", require("./routes/books"));
 app.use("/users", require("./routes/users"));
+app.use("/reservations", require("./routes/reservations"));
 
 // Root route
 app.get("/", (req, res) => {
