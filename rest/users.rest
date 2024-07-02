@@ -8,7 +8,30 @@ Content-Type: application/json
   "role": "user"
 }
 
+###
+
 ### GET /users/verify/{verificationToken} - Verify user's email
 # Make sure to replace {verificationToken} with the actual token received in your email.
-
 GET http://localhost:3000/users/verify/{verificationToken}
+
+###
+
+### POST /users/forgot-password - Request password reset
+POST http://localhost:3000/users/forgot-password
+Content-Type: application/json
+
+{
+  "email": "joaobbbraganca@gmail.com"
+}
+
+###
+
+### POST /users/reset-password/{resetToken} - Reset password
+# Make sure to replace {resetToken} with the actual reset token received in your email.
+
+POST http://localhost:3000/users/reset-password/dcccea21-af4e-45d2-ae6b-a48d6ff42cdc
+Content-Type: application/json
+
+{
+  "newPassword": "newpassword"
+}
