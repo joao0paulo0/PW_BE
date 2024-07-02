@@ -1,0 +1,14 @@
+### POST /users/register - Register a new user
+POST http://localhost:3000/users/register
+Content-Type: application/json
+
+{
+  "email": "joaobbbraganca@gmail.com",
+  "password": "password",
+  "role": "user"
+}
+
+### GET /users/verify/{verificationToken} - Verify user's email
+# Make sure to replace {verificationToken} with the actual token received in your email.
+
+GET http://localhost:3000/users/verify/{verificationToken}

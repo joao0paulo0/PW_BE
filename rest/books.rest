@@ -1,0 +1,26 @@
+### GET all books
+GET http://localhost:3000/books
+
+### GET a single book by ID
+GET http://localhost:3000/books/66841f76fddf4563d622449b
+
+### POST create a new book
+POST http://localhost:3000/books
+Content-Type: application/json
+
+{
+  "title": "Sample Book",
+  "author": "John Doe",
+  "category": "Fiction"
+}
+
+### PUT update a book by ID
+PUT http://localhost:3000/books/66841f76fddf4563d622449b
+Content-Type: application/json
+
+{
+  "title": "Updated Book Title"
+}
+
+### DELETE a book by ID
+DELETE http://localhost:3000/books/66841f76fddf4563d622449b
