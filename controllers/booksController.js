@@ -55,6 +55,32 @@ exports.createBook = async (req, res) => {
     req.body;
 
   try {
+    // Validate required fields
+    if (
+      !title ||
+      !author ||
+      !category ||
+      !totalCopies ||
+      !availableCopies ||
+      !description
+    ) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    // Validate field types and values
+    if (
+      typeof title === "" ||
+      typeof author === "" ||
+      typeof category === "" ||
+      typeof description === "" ||
+      totalCopies <= 0 ||
+      availableCopies < 0
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid field types or values." });
+    }
+
     // Check if adding this new book will exceed the maximum stock limit
     const books = await Book.find({});
     const currentTotalStock = books.reduce(
