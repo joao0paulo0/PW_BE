@@ -21,6 +21,7 @@ exports.createReservation = async (req, res) => {
     // Check if the book is already reserved
     const existingReservation = await Reservation.findOne({
       bookId,
+      userId,
       status: "reserved",
     });
     if (existingReservation) {

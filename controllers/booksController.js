@@ -1,9 +1,6 @@
 const Book = require("../models/book");
 const Reservation = require("../models/reservation");
 
-// @desc    Get all books with pagination, sorting, and search
-// @route   GET /books
-// @access  Public
 exports.getAllBooks = async (req, res) => {
   try {
     const { page = 1, limit = 10, sort, search } = req.query;
@@ -22,13 +19,26 @@ exports.getAllBooks = async (req, res) => {
     // Fetch total count of books that match the query
     const totalItems = await Book.countDocuments(query);
 
+    // Fetch books with pagination, sorting, and search filters
     const books = await Book.find(query)
       .sort(sort)
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
 
-    res.json({ books, totalItems });
+    const totalBooks = await Book.find();
+    // Calculate total book stock (sum of totalCopies of all books)
+    const bookStock = totalBooks.reduce(
+      (total, book) => total + book.totalCopies,
+      0
+    );
+
+    res.json({
+      books,
+      totalItems,
+      bookStock,
+      limitBookStock: parseInt(process.env.MAX_BOOK_STOCK),
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -124,22 +134,41 @@ exports.updateBook = async (req, res) => {
       return res.status(404).json({ message: "Book not found" });
     }
 
-    // Fetch reservations for the current book
-    const reservations = await Reservation.find({ bookId: id });
-    const reservedCopies = reservations.reduce(
-      (total, reservation) => total + reservation.quantity,
+    // Fetch all books excluding the current book being edited
+    const allBooksExceptCurrent = await Book.find({ _id: { $ne: id } });
+
+    // Calculate current total stock excluding the current book
+    const currentTotalStockExceptCurrent = allBooksExceptCurrent.reduce(
+      (total, book) => total + book.totalCopies,
       0
     );
 
-    // Calculate new availableCopies considering reservations
-    const newAvailableCopies = totalCopies - reservedCopies;
+    // Calculate new total stock including the edited book
+    const newTotalStockIncludingEdit =
+      parseInt(currentTotalStockExceptCurrent) + parseInt(totalCopies);
 
-    // Check if new total stock exceeds MAX_BOOK_STOCK
-    if (totalCopies > process.env.MAX_BOOK_STOCK) {
+    // Check if new totalCopies exceeds MAX_BOOK_STOCK
+    if (newTotalStockIncludingEdit > process.env.MAX_BOOK_STOCK) {
       return res.status(400).json({
         message: `Total stock of books cannot exceed ${process.env.MAX_BOOK_STOCK} copies.`,
       });
     }
+
+    // Fetch reservations for the current book
+    const reservations = await Reservation.find({
+      bookId: id,
+    }).countDocuments();
+    const reservedCopies = reservations || 0;
+
+    // Check if new totalCopies is less than reservedCopies
+    if (totalCopies < reservedCopies) {
+      return res.status(400).json({
+        message: `Total copies cannot be less than the reserved copies (${reservedCopies}).`,
+      });
+    }
+
+    // Calculate new availableCopies considering reservations
+    const newAvailableCopies = totalCopies - reservedCopies;
 
     // Update the book
     const updatedBook = await Book.findByIdAndUpdate(
@@ -166,9 +195,25 @@ exports.updateBook = async (req, res) => {
 // @access  Public
 exports.deleteBook = async (req, res) => {
   try {
+    // Check for reservations with status "reserved"
+    const reservedReservationsCount = await Reservation.countDocuments({
+      bookId: req.params.id,
+      status: "reserved",
+    });
+
+    if (reservedReservationsCount > 0) {
+      return res.status(400).json({
+        message: "Cannot delete book with active reservations.",
+      });
+    }
+
+    // Proceed to delete the book if no active reservations
     const deletedBook = await Book.findByIdAndDelete(req.params.id);
-    if (!deletedBook)
+
+    if (!deletedBook) {
       return res.status(404).json({ message: "Book not found" });
+    }
+
     res.json({ message: "Book deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
