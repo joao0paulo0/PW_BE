@@ -12,6 +12,8 @@ router.get("/:id", authMiddleware, booksController.getBookById);
 // Create a new book
 router.post("/", authMiddleware, booksController.createBook);
 
+router.post("/bulk", booksController.createBooksInBulk);
+
 // Update a book by ID
 router.put("/:id", authMiddleware, booksController.updateBook);
 

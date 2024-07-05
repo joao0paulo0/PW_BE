@@ -5,18 +5,17 @@ const Book = require("../models/book");
 // @access  Public
 exports.getAllBooks = async (req, res) => {
   try {
-    const { page = 1, limit = 10, sort } = req.query;
+    const { page = 1, limit = 10, sort, search } = req.query;
     const query = {};
 
-    // Handle search by title, author, or category
-    if (req.query.title) {
-      query.title = new RegExp(req.query.title, "i");
-    }
-    if (req.query.author) {
-      query.author = new RegExp(req.query.author, "i");
-    }
-    if (req.query.category) {
-      query.category = new RegExp(req.query.category, "i");
+    // Handle search across title, author, and category
+    if (search) {
+      const searchRegex = new RegExp(search, "i");
+      query.$or = [
+        { title: searchRegex },
+        { author: searchRegex },
+        { category: searchRegex },
+      ];
     }
 
     const books = await Book.find(query)
@@ -30,7 +29,6 @@ exports.getAllBooks = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 // @desc    Get a single book by ID
 // @route   GET /books/:id
 // @access  Public
@@ -48,7 +46,8 @@ exports.getBookById = async (req, res) => {
 // @route   POST /books
 // @access  Public
 exports.createBook = async (req, res) => {
-  const { title, author, category, totalCopies, availableCopies } = req.body;
+  const { title, author, category, totalCopies, availableCopies, description } =
+    req.body;
 
   try {
     const book = new Book({
@@ -57,6 +56,7 @@ exports.createBook = async (req, res) => {
       category,
       totalCopies,
       availableCopies,
+      description,
     });
 
     const newBook = await book.save();
@@ -104,6 +104,20 @@ exports.getAvailableBooks = async (req, res) => {
   try {
     const availableBooks = await Book.find({ availableCopies: { $gt: 0 } });
     res.json(availableBooks);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// POST route for bulk book creation
+exports.createBooksInBulk = async (req, res) => {
+  try {
+    const books = req.body; // Array of books to create
+
+    // Using insertMany to create multiple documents
+    const createdBooks = await Book.insertMany(books);
+
+    res.status(201).json(createdBooks);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

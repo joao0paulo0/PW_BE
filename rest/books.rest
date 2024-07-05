@@ -13,7 +13,8 @@ Content-Type: application/json
   "author": "Fernando Pessoa",
   "category": "Drama",
   "totalCopies": 1,
-  "availableCopies": 1
+  "availableCopies": 1,
+  "description": "Livro do Teste 2"
 }
 
 ### PUT update a book by ID
@@ -35,3 +36,170 @@ GET http://localhost:3000/books?author=Doe
 
 ### GET books by category
 GET http://localhost:3000/books?category=Fiction
+
+### POST Create Books in Bulk
+POST http://localhost:3000/books/bulk
+Content-Type: application/json
+
+[
+    {
+        "title": "To Kill a Mockingbird",
+        "author": "Harper Lee",
+        "category": "Classic",
+        "totalCopies": 2,
+        "availableCopies": 2,
+        "description": "A novel about racial injustice and moral growth set in the American South during the 1930s."
+    },
+    {
+        "title": "1984",
+        "author": "George Orwell",
+        "category": "Dystopian Fiction",
+        "totalCopies": 3,
+        "availableCopies": 3,
+        "description": "A dystopian novel depicting a totalitarian regime and the struggle for individual freedom."
+    },
+    {
+        "title": "Pride and Prejudice",
+        "author": "Jane Austen",
+        "category": "Romantic Fiction",
+        "totalCopies": 1,
+        "availableCopies": 1,
+        "description": "A classic novel focusing on the lives of the Bennet family and their relationships."
+    },
+    {
+        "title": "The Great Gatsby",
+        "author": "F. Scott Fitzgerald",
+        "category": "Literary Fiction",
+        "totalCopies": 2,
+        "availableCopies": 2,
+        "description": "A novel depicting the American Dream and the decadence of the Jazz Age."
+    },
+    {
+        "title": "The Catcher in the Rye",
+        "author": "J.D. Salinger",
+        "category": "Coming-of-Age Fiction",
+        "totalCopies": 1,
+        "availableCopies": 1,
+        "description": "A novel exploring alienation and teenage angst in post-World War II America."
+    },
+    {
+        "title": "Harry Potter and the Philosopher's Stone",
+        "author": "J.K. Rowling",
+        "category": "Fantasy",
+        "totalCopies": 3,
+        "availableCopies": 3,
+        "description": "The first book in the Harry Potter series, following the young wizard Harry's journey."
+    },
+    {
+        "title": "The Hobbit",
+        "author": "J.R.R. Tolkien",
+        "category": "Fantasy",
+        "totalCopies": 2,
+        "availableCopies": 2,
+        "description": "A fantasy novel about Bilbo Baggins' quest to reclaim the Dwarf Kingdom of Erebor."
+    },
+    {
+        "title": "The Lord of the Rings",
+        "author": "J.R.R. Tolkien",
+        "category": "Fantasy",
+        "totalCopies": 3,
+        "availableCopies": 3,
+        "description": "A trilogy that follows the hobbit Frodo Baggins as he embarks on a quest to destroy the One Ring."
+    },
+    {
+        "title": "Moby-Dick",
+        "author": "Herman Melville",
+        "category": "Adventure",
+        "totalCopies": 1,
+        "availableCopies": 1,
+        "description": "A novel about Captain Ahab's obsessive quest to kill the white whale Moby Dick."
+    },
+    {
+        "title": "The Road",
+        "author": "Cormac McCarthy",
+        "category": "Post-Apocalyptic Fiction",
+        "totalCopies": 2,
+        "availableCopies": 2,
+        "description": "A post-apocalyptic novel following a father and son's journey across a desolate landscape."
+    },
+    {
+        "title": "Brave New World",
+        "author": "Aldous Huxley",
+        "category": "Dystopian Fiction",
+        "totalCopies": 1,
+        "availableCopies": 1,
+        "description": "A dystopian novel depicting a future society where people are engineered and controlled."
+    },
+    {
+        "title": "The Adventures of Sherlock Holmes",
+        "author": "Arthur Conan Doyle",
+        "category": "Mystery",
+        "totalCopies": 2,
+        "availableCopies": 2,
+        "description": "A collection of detective stories featuring the famous detective Sherlock Holmes."
+    },
+    {
+        "title": "Frankenstein",
+        "author": "Mary Shelley",
+        "category": "Gothic Fiction",
+        "totalCopies": 1,
+        "availableCopies": 1,
+        "description": "A novel about Victor Frankenstein's experiment to create a sentient being."
+    },
+    {
+        "title": "The Picture of Dorian Gray",
+        "author": "Oscar Wilde",
+        "category": "Gothic Fiction",
+        "totalCopies": 1,
+        "availableCopies": 1,
+        "description": "A novel about a man who remains youthful while his portrait ages and reflects his moral decay."
+    },
+    {
+        "title": "Jane Eyre",
+        "author": "Charlotte Brontë",
+        "category": "Gothic Fiction",
+        "totalCopies": 1,
+        "availableCopies": 1,
+        "description": "A novel about the life of an orphan girl, Jane Eyre, and her journey to independence and love."
+    },
+    {
+        "title": "Wuthering Heights",
+        "author": "Emily Brontë",
+        "category": "Gothic Fiction",
+        "totalCopies": 2,
+        "availableCopies": 2,
+        "description": "A novel about the passionate and destructive love between Heathcliff and Catherine."
+    },
+    {
+        "title": "The Count of Monte Cristo",
+        "author": "Alexandre Dumas",
+        "category": "Adventure",
+        "totalCopies": 3,
+        "availableCopies": 3,
+        "description": "An adventure novel about Edmond Dantès' journey for revenge and redemption."
+    },
+    {
+        "title": "Anna Karenina",
+        "author": "Leo Tolstoy",
+        "category": "Classic",
+        "totalCopies": 2,
+        "availableCopies": 2,
+        "description": "A novel exploring themes of love, infidelity, and the societal constraints of 19th-century Russia."
+    },
+    {
+        "title": "Crime and Punishment",
+        "author": "Fyodor Dostoevsky",
+        "category": "Psychological Fiction",
+        "totalCopies": 1,
+        "availableCopies": 1,
+        "description": "A novel following Raskolnikov's moral and psychological turmoil after committing a murder."
+    },
+    {
+        "title": "One Hundred Years of Solitude",
+        "author": "Gabriel García Márquez",
+        "category": "Magical Realism",
+        "totalCopies": 2,
+        "availableCopies": 2,
+        "description": "A novel about the Buendía family's multi-generational saga in the fictional town of Macondo."
+    }
+]
