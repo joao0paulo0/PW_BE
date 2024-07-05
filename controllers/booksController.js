@@ -1,4 +1,5 @@
 const Book = require("../models/book");
+const Reservation = require("../models/reservation");
 
 // @desc    Get all books with pagination, sorting, and search
 // @route   GET /books
@@ -54,6 +55,21 @@ exports.createBook = async (req, res) => {
     req.body;
 
   try {
+    // Check if adding this new book will exceed the maximum stock limit
+    const books = await Book.find({});
+    const currentTotalStock = books.reduce(
+      (total, book) => total + book.totalCopies,
+      0
+    );
+    const newTotalStock = currentTotalStock + totalCopies;
+
+    if (newTotalStock > process.env.MAX_BOOK_STOCK) {
+      return res.status(400).json({
+        message: `Total stock of books cannot exceed ${process.env.MAX_BOOK_STOCK} copies.`,
+      });
+    }
+
+    // Create new book instance
     const book = new Book({
       title,
       author,
@@ -63,6 +79,7 @@ exports.createBook = async (req, res) => {
       description,
     });
 
+    // Save new book
     const newBook = await book.save();
     res.status(201).json(newBook);
   } catch (err) {
@@ -70,17 +87,48 @@ exports.createBook = async (req, res) => {
   }
 };
 
-// @desc    Update a book by ID
-// @route   PUT /books/:id
-// @access  Public
 exports.updateBook = async (req, res) => {
+  const { totalCopies, availableCopies, ...otherUpdates } = req.body;
+  const { id } = req.params;
+
   try {
-    const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    if (!updatedBook)
+    // Fetch current book details
+    const currentBook = await Book.findById(id);
+    if (!currentBook) {
       return res.status(404).json({ message: "Book not found" });
+    }
+
+    // Fetch reservations for the current book
+    const reservations = await Reservation.find({ bookId: id });
+    const reservedCopies = reservations.reduce(
+      (total, reservation) => total + reservation.quantity,
+      0
+    );
+
+    // Calculate new availableCopies considering reservations
+    const newAvailableCopies = totalCopies - reservedCopies;
+
+    // Check if new total stock exceeds MAX_BOOK_STOCK
+    if (totalCopies > process.env.MAX_BOOK_STOCK) {
+      return res.status(400).json({
+        message: `Total stock of books cannot exceed ${process.env.MAX_BOOK_STOCK} copies.`,
+      });
+    }
+
+    // Update the book
+    const updatedBook = await Book.findByIdAndUpdate(
+      id,
+      {
+        totalCopies,
+        availableCopies: newAvailableCopies,
+        ...otherUpdates, // Include other updates to the book
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
     res.json(updatedBook);
   } catch (err) {
     res.status(400).json({ message: err.message });
