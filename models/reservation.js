@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const reservationSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Book", required: true },
+  bookTitle: { type: String, required: true },
   reservationDate: { type: Date, default: Date.now },
   returnByDate: { type: Date },
   status: { type: String, enum: ["reserved", "returned"], default: "reserved" },

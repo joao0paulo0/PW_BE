@@ -22,7 +22,7 @@ exports.createReservation = async (req, res) => {
     if (existingReservation) {
       return res
         .status(400)
-        .json({ message: "This book is already reserved." });
+        .json({ message: "This book is already reserved by you." });
     }
 
     // Fetch the book and check if it's available
@@ -45,6 +45,7 @@ exports.createReservation = async (req, res) => {
     const reservation = new Reservation({
       userId,
       bookId,
+      bookTitle: book.title,
       reservationDate,
       returnByDate,
     });

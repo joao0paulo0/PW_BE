@@ -9,10 +9,11 @@ POST http://localhost:3000/books
 Content-Type: application/json
 
 {
-  "title": "Livro ESTG",
-  "author": "John Doe",
-  "category": "Informatics",
-  "totalCopies": 4
+  "title": "Livro do Teste 2",
+  "author": "Fernando Pessoa",
+  "category": "Drama",
+  "totalCopies": 1,
+  "availableCopies": 1
 }
 
 ### PUT update a book by ID
