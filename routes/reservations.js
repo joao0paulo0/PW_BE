@@ -28,4 +28,10 @@ router.put(
 // DELETE /reservations/:id - Delete reservation by ID
 router.delete("/:id", authMiddleware, reservationController.deleteReservation);
 
+router.post(
+  "/:reservationId/alert",
+  authMiddleware,
+  reservationController.alertUserReservation
+);
+
 module.exports = router;

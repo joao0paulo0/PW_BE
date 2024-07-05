@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     verified: { type: Boolean, default: false },
+    isBlocked: { type: Boolean, default: false },
     verificationToken: String,
     resetPasswordToken: String, // For password reset token
     resetPasswordExpires: Date, // For password reset token expiration

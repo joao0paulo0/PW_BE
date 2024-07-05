@@ -3,9 +3,10 @@ POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-  "email": "joaobbbraganca@gmail.com",
-  "password": "password",
-  "role": "user"
+  "email": "joaobbbraganca3@gmail.com",
+  "password": "123456",
+  "role": "admin",
+  "verified": true
 }
 
 ###

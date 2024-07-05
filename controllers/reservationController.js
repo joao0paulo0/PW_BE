@@ -1,13 +1,17 @@
 const Reservation = require("../models/reservation");
 const Book = require("../models/book");
-const { borrowBook } = require("./booksController");
+const nodemailer = require("nodemailer");
 
 exports.createReservation = async (req, res) => {
   const { userId, bookId } = req.body;
 
   try {
-    // Check if user has reached the maximum limit of 3 reservations
-    const userReservationsCount = await Reservation.countDocuments({ userId });
+    // Check if user has reached the maximum limit of 3 reservations (including reserved books)
+    const userReservationsCount = await Reservation.countDocuments({
+      userId,
+      status: "reserved",
+    });
+
     if (userReservationsCount >= 3) {
       return res.status(400).json({
         message: "You have reached the maximum limit of 3 reservations.",
@@ -149,5 +153,48 @@ exports.deleteReservation = async (req, res) => {
     res.json({ message: "Reservation deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+exports.alertUserReservation = async (req, res) => {
+  const { reservationId } = req.params;
+
+  try {
+    const reservation = await Reservation.findById(reservationId).populate(
+      "userId"
+    ); // Populate using 'userId' instead of 'user'
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+
+    const user = reservation.userId; // Access user from populated 'userId' field
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Create a transporter object with SMTP server details
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL, // Your email
+        pass: process.env.PASSWORD, // Your email password
+      },
+    });
+
+    // Email options
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: user.email,
+      subject: "Return Book Reminder",
+      text: `Dear ${user.email},\n\nThis is a reminder to return the book "${reservation.bookTitle}".\n\nThank you!`,
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+
+    res.json({ message: "Alert email sent successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error sending alert email", error });
   }
 };

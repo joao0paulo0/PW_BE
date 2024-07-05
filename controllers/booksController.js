@@ -18,17 +18,21 @@ exports.getAllBooks = async (req, res) => {
       ];
     }
 
+    // Fetch total count of books that match the query
+    const totalItems = await Book.countDocuments(query);
+
     const books = await Book.find(query)
       .sort(sort)
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
 
-    res.json(books);
+    res.json({ books, totalItems });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 // @desc    Get a single book by ID
 // @route   GET /books/:id
 // @access  Public

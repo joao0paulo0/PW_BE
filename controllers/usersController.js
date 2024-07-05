@@ -39,8 +39,8 @@ const sendPasswordResetEmail = async (user) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "joao.pteixeira2005@gmail.com", // Replace with your Gmail account
-        pass: "utbt qudw edzs fbwy", // Replace with the app password provided
+        user: process.env.EMAIL, // Replace with your Gmail account
+        pass: process.env.PASSWORD, // Replace with the app password provided
       },
     });
 
@@ -51,7 +51,7 @@ const sendPasswordResetEmail = async (user) => {
     await user.save();
 
     const mailOptions = {
-      from: "joao.pteixeira2005@gmail.com",
+      from: process.env.EMAIL,
       to: user.email,
       subject: "Password Reset Request",
       text: `Hello ${user.email}, you have requested to reset your password. Please click on the following link to reset your password: http://localhost:5173/change-password/${resetToken}`,
@@ -190,6 +190,11 @@ exports.loginUser = async (req, res) => {
       return res.status(403).json({ message: "User is not verified." });
     }
 
+    // Check if user is blocked
+    if (user.isBlocked) {
+      return res.status(403).json({ message: "User is blocked." });
+    }
+
     // Create and sign JWT token
     const payload = {
       user: {
@@ -211,6 +216,39 @@ exports.loginUser = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
+  }
+};
+
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Block or unblock user
+exports.blockUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.isBlocked = req.body.isBlocked;
+    await user.save();
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
