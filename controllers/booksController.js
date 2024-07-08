@@ -97,7 +97,8 @@ exports.createBook = async (req, res) => {
       (total, book) => total + book.totalCopies,
       0
     );
-    const newTotalStock = currentTotalStock + totalCopies;
+
+    const newTotalStock = Number(currentTotalStock) + Number(totalCopies);
 
     if (newTotalStock > process.env.MAX_BOOK_STOCK) {
       return res.status(400).json({
