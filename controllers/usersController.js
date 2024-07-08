@@ -9,8 +9,8 @@ const sendConfirmationEmail = async (user) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "joao.pteixeira2005@gmail.com", // Replace with your PW_BE Gmail account
-        pass: "utbt qudw edzs fbwy", // Use the app password provided
+        user: process.env.EMAIL, // Replace with your PW_BE Gmail account
+        pass: process.env.PASSWORD, // Use the app password provided
       },
     });
 
@@ -20,7 +20,7 @@ const sendConfirmationEmail = async (user) => {
     await user.save();
 
     const mailOptions = {
-      from: "joao.pteixeira@gmail.com", // Sender email address
+      from: process.env.EMAIL, // Sender email address
       to: user.email, // Recipient email address
       subject: "Confirm your registration",
       text: `Hello ${user.email}, please click on the following link to verify your account: http://localhost:3000/users/verify/${verificationToken}`,
